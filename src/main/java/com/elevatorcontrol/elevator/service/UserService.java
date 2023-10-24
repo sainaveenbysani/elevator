@@ -23,11 +23,13 @@ public class UserService{
 	UserRepository userRepository;
 	
 	@Autowired
-	BuildingRepository buildingRepository;
+	BuildingService buildingService;
 	
 	@Autowired
-	ElevatorRepository elevatorRepository;
+	BuildingRepository buildingRepository;
 
+	@Autowired
+	ElevatorService elevatorService;
 	public User addUser(UserDTO newUser) {
 		User user = new User();
 		user.setUserName(newUser.getUserName());
@@ -53,51 +55,30 @@ public class UserService{
 	}
 	
 	public List<Building> getBuildings(String userId){
-		Optional<User> userCheck = userRepository.findByUserIdentifier(userId);
-		if(userCheck!=null) {
-			List<Building> buildingList = new ArrayList<>();
-			List<String> buildingIdentifiers = userCheck.get().getBuildingIdentifiers();
-			if(buildingIdentifiers!= null) {
-			for(String identifer : buildingIdentifiers) {
-				buildingList.add(buildingRepository.findByBuildingIdentifier(identifer).get());
-			}
-		 return buildingList;	
-			}
-			else
-			{
-				return null; //no buildings found
-			}
+		Optional<User> user = userRepository.findByUserIdentifier(userId);
+		if(user.isPresent()) {
+			List<String> buildingIdentifiers = user.get().getBuildingIdentifiers();
+			return buildingService.getBuildings(buildingIdentifiers);
 		}
 		else {
-				return null; //User Not found
-		}	
-		
+		    return null; //User Not found
+		}		
 	}
 
 	public List<Elevator> getElevatorStatus(String userId, String buildingId) {
-		Optional<User> userCheck = userRepository.findByUserIdentifier(userId);
-		if(userCheck!= null) {
-			List<String> buildingIdentifiers = userCheck.get().getBuildingIdentifiers();
+		Optional<User> user = userRepository.findByUserIdentifier(userId);
+		if(user.isPresent()) {
+			List<String> buildingIdentifiers = user.get().getBuildingIdentifiers();
 			if(buildingIdentifiers.contains(buildingId)) {
-				List<Elevator> elevatorList = new ArrayList<>();
 				List<String> elevatorIdentifiers = buildingRepository.findByBuildingIdentifier(buildingId).get().getElevatorIdentifiers();
-				for (String identifier: elevatorIdentifiers) {
-					Elevator elevatorCheck = elevatorRepository.findByElevatorIdentifier(identifier).get();
-//					Elevator elevator = new Elevator();
-//					elevator.builder()
-//					.elevatorIdentifier(elevatorCheck.getElevatorIdentifier())
-//					.state(elevatorCheck.getState());
-					elevatorList.add(elevatorCheck);
-				}				
-				return elevatorList;				
+				return elevatorService.getElevators(elevatorIdentifiers);
 			}
-			else {				
-				return null; // building not found				
+			else {
+				return null; // building not found
 			}
-		}
+		}				
 		else {
 			return null; // user not found
 		}
 	}
-	
 }

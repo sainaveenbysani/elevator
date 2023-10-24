@@ -20,7 +20,7 @@ import com.elevatorcontrol.elevator.service.BuildingService;
 
 
 @RestController
-@RequestMapping(path = "/buildings")
+@RequestMapping(path = "/api/buildings")
 public class BuildingController{
 	
 	@Autowired
@@ -33,26 +33,21 @@ public class BuildingController{
 	}
 	
 	
-	@GetMapping
-	public List<Integer> getAllBuildings(){
-		return null;
-	}
-	
-	@GetMapping(path = "/{id}")
-	public BuildingDTO getBuilding(@PathVariable(value = "id") int buildingId) {
-		return null;
-		
-	}
-	
-	@PutMapping(path = "/{id}")
-	public BuildingDTO updateBuilding(@PathVariable(value= "id") int buildingId, @RequestBody BuildingDTO building) {
-		return null;
-		
-	}
-	
-	@DeleteMapping(path = "/{id}")
-	public BuildingDTO deleteBuilding(@PathVariable(value= "id") int buildingId) {
-		return null;
-		
-	}
+//	@GetMapping(path = "/{id}")
+//	public BuildingDTO getBuilding(@PathVariable(value = "id") int buildingId) {
+//		return null;
+//		
+//	}
+//	
+//	@PutMapping(path = "/{id}")
+//	public BuildingDTO updateBuilding(@PathVariable(value= "id") int buildingId, @RequestBody BuildingDTO building) {
+//		return null;
+//		
+//	}
+//	
+//	@DeleteMapping(path = "/{id}")
+//	public BuildingDTO deleteBuilding(@PathVariable(value= "id") int buildingId) {
+//		return null;
+//		
+//	}
 }

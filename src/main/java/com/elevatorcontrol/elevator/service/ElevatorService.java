@@ -1,5 +1,7 @@
 package com.elevatorcontrol.elevator.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +23,15 @@ public class ElevatorService{
 		newElevator.setCurrentFloor(elevator.getCurrentFloor());
 		newElevator.setState(State.STOPPED);
 		return elevatorRepository.save(newElevator);
+	}
+
+	public List<Elevator> getElevators(List<String> elevatorIdentifiers) {
+
+		if(elevatorIdentifiers != null) {
+			return elevatorRepository.findAllByElevatorIdentifierIn(elevatorIdentifiers);	
+		}
+		else {
+			return null;
+		}		
 	}
 }

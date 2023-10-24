@@ -20,7 +20,7 @@ import com.elevatorcontrol.elevator.service.ElevatorService;
 
 
 @RestController
-@RequestMapping(path = "/elevators")
+@RequestMapping(path = "/api/elevators")
 public class ElevatorController{
 	
 	@Autowired
