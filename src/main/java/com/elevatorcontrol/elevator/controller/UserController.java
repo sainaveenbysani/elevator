@@ -22,7 +22,7 @@ import com.elevatorcontrol.elevator.model.User;
 import com.elevatorcontrol.elevator.service.UserService;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/api/users")
 public class UserController{
 	
 	@Autowired
@@ -34,9 +34,10 @@ public class UserController{
 		return userService.addUser(newUser);
 	}
 	
-	@GetMapping(path = "/{id}")
-	public User getUser(@PathVariable(value = "id") int userId) {
-		return null;		
+	@PutMapping(path = "/{id}")
+	@ResponseStatus(HttpStatus.OK)
+	public User updateUser(@PathVariable(value= "id") String userId, @RequestBody UserDTO updatedUser) {
+		return userService.updateUser(userId, updatedUser);		
 	}
 
 	@GetMapping(path = "/{id}/buildings")
@@ -44,19 +45,21 @@ public class UserController{
 		return userService.getBuildings(userId);		
 	}
 	
-	@GetMapping(path = "/{id}/building/{buildingId}")
+	@GetMapping(path = "/{id}/building/{buildingId}/elevators")
 	public List<Elevator> getElevatorStatus(@PathVariable(value = "id") String userId, 
 			@PathVariable(value= "buildingId") String buildingId) {
 		return userService.getElevatorStatus(userId, buildingId);		
 	}
 	
-	@PutMapping(path = "/{id}")
-	public User updateUser(@PathVariable(value= "id") String userId, @RequestBody UserDTO updatedUser) {
-		return userService.updateUser(userId, updatedUser);		
-	}
+
+//	
+//	@GetMapping(path = "/{id}")
+//	public User getUser(@PathVariable(value = "id") int userId) {
+//		return null;		
+//	}
 	
-	@DeleteMapping(path = "/{id}")
-	public User deleteUser(@PathVariable(value= "id") int userId) {
-		return null;		
-	}
+//	@DeleteMapping(path = "/{id}")
+//	public User deleteUser(@PathVariable(value= "id") int userId) {
+//		return null;		
+//	}
 }
