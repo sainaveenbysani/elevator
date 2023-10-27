@@ -21,12 +21,15 @@ public class ElevatorDTO{
 	
 	private Integer currentFloor;
 	
-	private State state;
+	private State state;	
 	
 	public enum State{ 
 		UP, DOWN, STOPPED, OUT_OF_SERVICE
 	}
 }
+
+
+
 
 
 	
