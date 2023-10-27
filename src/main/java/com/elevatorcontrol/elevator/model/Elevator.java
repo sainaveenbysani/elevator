@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Elevator{
 	
 	@Id
-	private String Id;
+	private String id;
 	
 	private String elevatorIdentifier = UUID.randomUUID().toString();
 		
@@ -35,7 +35,8 @@ public class Elevator{
 	private State state;
 	
 	public enum State{ 
-		UP, DOWN, STOPPED, OUT_OF_SERVICE
+		UP, DOWN, STOPPED, OUT_OF_SERVICE;
 	}
 }
 	
+

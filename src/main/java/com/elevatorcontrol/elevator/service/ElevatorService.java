@@ -1,13 +1,19 @@
 package com.elevatorcontrol.elevator.service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.elevatorcontrol.elevator.dto.ElevatorDTO;
+import com.elevatorcontrol.elevator.dto.ElevatorRequestDTO;
+import com.elevatorcontrol.elevator.dto.ElevatorRequestDTO.UserState;
+import com.elevatorcontrol.elevator.exception.ElevatorNotFoundException;
 import com.elevatorcontrol.elevator.model.Elevator;
 import com.elevatorcontrol.elevator.model.Elevator.State;
+import com.elevatorcontrol.elevator.repository.BuildingRepository;
 import com.elevatorcontrol.elevator.repository.ElevatorRepository;
 
 @Service
@@ -15,6 +21,12 @@ public class ElevatorService{
 	
 	@Autowired
 	ElevatorRepository elevatorRepository;
+	
+	@Autowired
+	BuildingRepository buildingRepository;
+	
+	@Autowired
+	ElevatorMovementService elevatorMovementService;
 	
 	public Elevator createElevator(ElevatorDTO elevator) {
 		Elevator newElevator = new Elevator();
@@ -31,7 +43,50 @@ public class ElevatorService{
 			return elevatorRepository.findAllByElevatorIdentifierIn(elevatorIdentifiers);	
 		}
 		else {
-			return null;
+			throw new ElevatorNotFoundException(" Elevators Not Found");
 		}		
 	}
+
+	public Elevator summonElevator(List<Elevator> elevatorList, ElevatorRequestDTO elevatorRequest) {
+		Integer userCurrentFloor = elevatorRequest.getUserCurrentFloor();
+	    UserState userDesiredState = elevatorRequest.getUserDesiredState();  
+	    List<Elevator> workingElevators = elevatorList.stream().filter(elevator-> elevator.getState()!= State.OUT_OF_SERVICE)
+	    								  .toList();
+	    Elevator nearestElevator = workingElevators.stream().filter(elevator-> elevator.getState()== State.STOPPED || elevator.getState().toString().equals(userDesiredState.toString()))
+	    								  .min(Comparator.comparingInt(elevator -> Math.abs(userCurrentFloor - elevator.getCurrentFloor())))
+	    								  .orElse(null);
+	    if(nearestElevator.getCurrentFloor()<userCurrentFloor) {
+			nearestElevator.setState(State.UP);
+		}else if(nearestElevator.getCurrentFloor()>userCurrentFloor) {
+			nearestElevator.setState(State.DOWN);
+		}
+	    elevatorRepository.save(nearestElevator);
+	    elevatorMovementService.moveElevator(nearestElevator, userCurrentFloor);
+	    return nearestElevator;
+	}
+	
+
+	public Elevator selectFloor(String elevatorIdentifier, Integer destinationFloor) {
+		Optional<Elevator> selectedElevator = elevatorRepository.findByElevatorIdentifier(elevatorIdentifier);
+		Elevator elevator = null;
+		if(selectedElevator.isPresent()) {
+			elevator = selectedElevator.get();
+		}else {
+			throw new ElevatorNotFoundException("Elevator with id " + elevatorIdentifier + " is not found" );
+		}
+		
+		if(elevator.getCurrentFloor()== destinationFloor)
+		{
+			return elevator;
+		}
+		if(elevator.getCurrentFloor()<destinationFloor) {
+			elevator.setState(State.UP);
+		}else if(elevator.getCurrentFloor()>destinationFloor) {
+			elevator.setState(State.DOWN);
+		}
+		elevatorRepository.save(elevator);
+		elevatorMovementService.moveElevator(elevator, destinationFloor);
+		return elevator;
+	}
+
 }
