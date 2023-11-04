@@ -48,7 +48,8 @@ public class UserService{
 			user.setBuildingIdentifiers(updatedUser.getBuildingIdentifiers());
 			}
 			return userRepository.save(user);
-		}else {
+		}
+		else {
 			throw new UserNotFoundException("User with id "+userId+" not found.");
 		}
 	}
