@@ -12,9 +12,18 @@ public class ElevatorConfig {
 	
 	@Bean
     public TaskExecutor threadPoolTaskExecutor() {
-		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		taskExecutor.setCorePoolSize(2);
+		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor() {
+			private static final long serialVersionUID = 5L;
+
+			@Override
+	        public void destroy() {
+	            super.shutdown();
+	        }		
+		};
+		taskExecutor.setCorePoolSize(3);
 		taskExecutor.setMaxPoolSize(10);
+		taskExecutor.setWaitForTasksToCompleteOnShutdown(true); 
+		taskExecutor.setAwaitTerminationSeconds(30); 
 		taskExecutor.initialize();	
 		return taskExecutor;		
 	}

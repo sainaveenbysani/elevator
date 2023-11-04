@@ -55,6 +55,11 @@ public class ElevatorService{
 	    Elevator nearestElevator = workingElevators.stream().filter(elevator-> elevator.getState()== State.STOPPED || elevator.getState().toString().equals(userDesiredState.toString()))
 	    								  .min(Comparator.comparingInt(elevator -> Math.abs(userCurrentFloor - elevator.getCurrentFloor())))
 	    								  .orElse(null);
+//	    if( nearestElevator == null) {
+//	    	// need to add the queuing mechanism to queue the requests.
+//	    }
+	    
+	    // this below if else logic is not needed if some elevator is already moving towards the user
 	    if(nearestElevator.getCurrentFloor()<userCurrentFloor) {
 			nearestElevator.setState(State.UP);
 		}else if(nearestElevator.getCurrentFloor()>userCurrentFloor) {
